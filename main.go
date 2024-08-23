@@ -9,20 +9,21 @@ import (
 	"github.com/mukeshkuiry/anycall/peer"
 )
 
-func main() {
-
+// Handler is the exported function Vercel will use to handle requests
+func Handler(w http.ResponseWriter, r *http.Request) {
 	r := mux.NewRouter()
 	r.HandleFunc("/peer", peer.HandlePeerConnection)
 	r.HandleFunc("/group", group.HandleGroupConnection)
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusOK)
-		// allow cross origin requests
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-
 		w.Write([]byte("Hello, World!"))
 	}).Methods("GET")
-	log.Println("Serving at localhost:8000...")
-	log.Fatal(http.ListenAndServe(":8000", r))
 
+	r.ServeHTTP(w, r)
+}
+
+func main() {
+	log.Println("Server is running...")
 }
